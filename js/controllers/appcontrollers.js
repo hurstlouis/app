@@ -1,14 +1,12 @@
 /*global define, console*/
 define([
     'controllers/mapcontroller',
-    'widgets/edit/editTools'
-], function (MapController, EditTools) {
+    'esri/IdentityManager'
+], function (MapController) {
     'use strict';
 
     function mapLoaded(map) {
-        var editTools = new EditTools({
-            map: map
-        }, 'map-tools');
+
     }
 
     function init(config) {
