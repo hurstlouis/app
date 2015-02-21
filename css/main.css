@@ -15,3 +15,9 @@
 	top: 1em;
 	right: 1em;
 }
+
+#template-div {
+	postion: absolute;
+	top: 50px;
+	right: 5px;
+}
