@@ -2,11 +2,12 @@
 require([
     'controllers/appcontrollers',
     'services/mapservices',
+    'esri/config',
     'dojo/domReady!'
-], function (appCtrl, mapServices) {
+], function (appCtrl, mapServices, esriConfig) {
     "use strict";
-    esri.config.defaults.io.proxyUrl = "../proxy/proxy.ashx";
-    esri.config.defaults.io.alwaysUseProxy = false;
+    esriConfig.defaults.io.proxyUrl = "../proxy/proxy.ashx";
+    esriConfig.defaults.io.alwaysUseProxy = false;
     appCtrl.init({
         elem: 'map-div',
         mapOptions: {
