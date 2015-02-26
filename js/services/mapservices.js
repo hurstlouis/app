@@ -11,7 +11,8 @@ define([
     function _loadServices() {
         var layers = [],
             censusLayer = new FeatureLayer(CENSUS_URL, {
-                id: 'Census'
+                id: 'Census',
+                outFields: ['*']
             }),
             requestLayer = new FeatureLayer(REQUEST_URL, {
                 id: 'Requests',
