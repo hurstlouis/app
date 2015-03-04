@@ -10,6 +10,8 @@ define([
     'dojo/dom-attr',
     'dojo/query',
     'esri/graphic',
+    'widgets/edit/editService',
+    'utils/symbolUtil',
     'text!widgets/edit/editTools.tpl.html'
 ], function (
     declare,
@@ -21,6 +23,8 @@ define([
     domAttr,
     query,
     Graphic,
+    EditService,
+    symbolUtil,
     template
 ) {
     'use strict';
@@ -34,6 +38,10 @@ define([
             this.options = options || {};
             this.map = this.options.map;
             this.requestLayer = this.map.getLayer('Requests');
+
+            this.editService = new EditService({
+                layer: this.requestLayer
+            });
         },
         postCreate: function () {
             this.handler = on.pausable(
@@ -47,12 +55,23 @@ define([
                     this.domNode,
                     '.btn-edit:click',
                     lang.hitch(this, '_toggleEditButton')
+                ),
+                on(
+                    this.domNode,
+                    'btn-sync:click',
+                    lang.hitch(this, '_syncLocal')
                 )
             );
         },
 
         _addRequest: function () {
             this._toggleEditButton();
+        },
+        _syncLocal: function () {
+            console.debug('has local?', this.editService.hasLocal);
+            if (this.editService.hasLocal) {
+                this.editService.sync();
+            }
         },
         _addPoint: function (e) {
             var mapPt = e.mapPoint, census = e.graphic, attributes = {}, graphic, description;
@@ -61,13 +80,28 @@ define([
             attributes.RequestDate = new Date().getTime();
             attributes.CensusTract = census.attributes.NAME;
             attributes.Description = description;
-            graphic = new Graphic(mapPt, null, attributes);
-            this.requestLayer.applyEdits([graphic])
+            console.debug('attr', attributes);
+
+            graphic = new Graphic(mapPt, symbolUtil.simpleMarker(), attributes);
+
+            this.editService.add([graphic]).then(
+                lang.hitch(this, function () {
+                    this._toggleEditButton();
+                    this.map.graphics.add(graphic);
+                    alert('Request Submitted');
+                }),
+                lang.hitch(this, function () {
+                    this._toggleEditButton();
+                    this.map.graphics.add(graphic);
+                    alert('Request Saved Locally');
+                })
+            );
+/*             this.requestLayer.applyEdits([graphic])
                 .then(lang.hitch(this, function () {
                     this._toggleEditButton();
                     alert('Request Submited');
                 }));
-
+ */
         },
         _toggleEditButton: function (e) {
             this.editing = !this.editing;
